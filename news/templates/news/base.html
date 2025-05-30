@@ -1,0 +1,131 @@
+    {% load static %}
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}My Site{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'news/assets/css/style.css' %}">
+        
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}">NEXT INVEST</a>
+        
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+        
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}">Home</a>
+                        </li>
+        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                        </li>
+        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'about_us' %}">About us</a>
+                        </li>
+                    </ul>
+        
+                    <div class="auth-buttons">
+                        <a href="#" class="auth-btn login-btn">LOGIN</a>
+                        <a href="#" class="auth-btn register-btn">REGISTER</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <main class="main-hero">
+            <div class="hero-background"></div>
+            <div class="blue-overlay"></div>
+            <div class="blue-circle"></div>
+            <div class="hero-content">
+                <div class="container">
+                    <div class="hero-text">
+                        <h1><span class="first-line">Meaningful <span class="second-part">investments in</span></span>
+                            <span class="second-line highlight">Main Street businesses</span>
+                        </h1>
+                        <p>Browse vetted investment offerings in communities all over the US.</p>
+                        <button class="hero-btn">GET STARTED</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+
+
+
+    {% block content %}
+    {% endblock content %}
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-branding">
+                    <h2>NEXT INVEST</h2>
+                    <p>Copyright © 2020. Logolpsum. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <div>
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="#">Email Marketing</a></li>
+                            <li><a href="#">Campaigns</a></li>
+                            <li><a href="#">Branding</a></li>
+                            <li><a href="#">Offline</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>About</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Benefits</a></li>
+                            <li><a href="#">Team</a></li>
+                            <li><a href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="scroll-up">
+                    <a href="#">
+                        <div class="circle"><span>&uarr;</span></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <form class="newsletter">
+                    <label>Subscribe to our newsletter</label>
+                    <div class="input-wrapper">
+                        <input type="email" placeholder="Email address" />
+                        <button type="submit">&#10140;</button>
+                    </div>
+                </form>
+
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    </body>
+
+    </html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="{% static 'news/assets/js/script.js' %}"></script>

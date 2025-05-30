@@ -1,0 +1,322 @@
+{% extends 'news/other_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --dark: #1e293b;
+        --darker: #0f172a;
+        --light: #f8fafc;
+        --gray: #94a3b8;
+        --light-gray: #e2e8f0;
+    }
+
+    .about-hero {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
+        color: white;
+        padding: 8rem 0 6rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('{% static "images/dots-pattern.svg" %}') center/cover;
+        opacity: 0.15;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        opacity: 0.9;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 4rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 16px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.4s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, white, #e0e7ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .mission-section {
+        padding: 6rem 0;
+        background: white;
+        position: relative;
+    }
+
+    .mission-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--darker);
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+
+    .mission-text {
+        font-size: 1.125rem;
+        line-height: 1.8;
+        color: var(--dark);
+        margin-bottom: 2rem;
+    }
+
+    .team-section {
+        padding: 6rem 0;
+        background: #f8fafc;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+
+    .team-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s ease;
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .team-photo {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .team-info {
+        padding: 2rem;
+    }
+
+    .team-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--darker);
+    }
+
+    .team-position {
+        color: var(--primary);
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .team-bio {
+        color: var(--dark);
+        line-height: 1.6;
+    }
+
+    /* Анимации */
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .floating {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade {
+        animation: fadeInUp 1s ease-out forwards;
+    }
+
+    .delay-1 { animation-delay: 0.2s; }
+    .delay-2 { animation-delay: 0.4s; }
+    .delay-3 { animation-delay: 0.6s; }
+</style>
+
+<!-- Подключаем GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Анимация элементов при скролле
+        gsap.utils.toArray(".animate-on-scroll").forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                ease: "power2.out"
+            });
+        });
+
+        // Параллакс эффект
+        gsap.to(".floating", {
+            y: 30,
+            duration: 10,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+    });
+</script>
+
+<div class="about-page">
+    <!-- Герой секция -->
+    <section class="about-hero">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="hero-title animate-fade">Инвестируйте в будущее вместе с нами</h1>
+                <p class="hero-subtitle animate-fade delay-1">NEXT INVEST - это платформа, которая соединяет инновационные проекты с инвесторами по всему миру</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card animate-fade delay-1">
+                        <div class="stat-value">250+</div>
+                        <div class="stat-label">Успешных проектов</div>
+                    </div>
+                    <div class="stat-card animate-fade delay-2">
+                        <div class="stat-value">$1.2B</div>
+                        <div class="stat-label">Привлеченных инвестиций</div>
+                    </div>
+                    <div class="stat-card animate-fade delay-3">
+                        <div class="stat-value">15K+</div>
+                        <div class="stat-label">Довольных инвесторов</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Миссия -->
+    <section class="mission-section">
+        <div class="container">
+            <div class="mission-content">
+                <h2 class="section-title animate-on-scroll">Наша миссия</h2>
+                <p class="mission-text animate-on-scroll">Мы создаем экосистему, где каждый может найти инвестиционные возможности, соответствующие его целям и ценностям. Наша платформа объединяет лучшие проекты с проверенными инвесторами.</p>
+                <p class="mission-text animate-on-scroll">С 2015 года мы помогли сотням стартапов найти финансирование и тысячи инвесторов - выгодно вложить свои средства.</p>
+                
+                <div class="mt-5 animate-on-scroll">
+                    <img src="{% static 'news/assets/img/strategy-definition-cheat-sheet-1-1024x768.png' %}" alt="Our mission" class="rounded-3 shadow-lg floating" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Команда -->
+    <section class="team-section">
+        <div class="container">
+            <h2 class="section-title text-center animate-on-scroll">Наша команда</h2>
+            <p class="text-center max-w-2xl mx-auto text-lg text-gray-600 animate-on-scroll">Профессионалы с опытом в инвестициях, технологиях и финансах</p>
+            
+            <div class="team-grid">
+                <div class="team-card animate-on-scroll">
+                    <!-- <img src="{% static 'images/team-1.jpg' %}" alt="Team member" class="team-photo"> -->
+                    <div class="team-info">
+                        <h3 class="team-name">Алексей Петров</h3>
+                        <p class="team-position">CEO & Основатель</p>
+                        <p class="team-bio">Более 15 лет опыта в венчурных инвестициях и управлении стартапами.</p>
+                    </div>
+                </div>
+                
+                <div class="team-card animate-on-scroll">
+                    <!-- <img src="{% static 'images/team-2.jpg' %}" alt="Team member" class="team-photo"> -->
+                    <div class="team-info">
+                        <h3 class="team-name">Мария Иванова</h3>
+                        <p class="team-position">Директор по инвестициям</p>
+                        <p class="team-bio">Эксперт в области финансового анализа и due diligence.</p>
+                    </div>
+                </div>
+                
+                <div class="team-card animate-on-scroll">
+                    <!-- <img src="{% static 'images/team-3.jpg' %}" alt="Team member" class="team-photo"> -->
+                    <div class="team-info">
+                        <h3 class="team-name">Дмитрий Сидоров</h3>
+                        <p class="team-position">CTO</p>
+                        <p class="team-bio">Разрабатывает технологическую платформу для безопасных сделок.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

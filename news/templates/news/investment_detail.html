@@ -1,0 +1,680 @@
+{% extends 'news/other_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<style>
+    /* ===== ГЛОБАЛЬНЫЕ СТИЛИ ===== */
+    :root {
+        --primary: #2563eb;
+        --primary-light: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --dark: #1e293b;
+        --darker: #0f172a;
+        --light: #f8fafc;
+        --gray: #94a3b8;
+        --success: #10b981;
+        --danger: #ef4444;
+        --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .investment-detail {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        color: var(--dark);
+        background-color: #f1f5f9;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    /* ===== ГЕРОЙ СЕКЦИЯ ===== */
+    .detail-hero {
+        height: 80vh;
+        min-height: 600px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+    }
+
+    .detail-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.3) 100%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: white;
+        padding-bottom: 4rem;
+        width: 100%;
+    }
+
+    .hero-tags {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-tag {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .detail-hero h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-description {
+        font-size: 1.25rem;
+        max-width: 700px;
+        opacity: 0.9;
+        margin-bottom: 2.5rem;
+    }
+
+    .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .meta-icon {
+        width: 20px;
+        height: 20px;
+        opacity: 0.8;
+    }
+
+    .funding-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+
+    .stat {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: var(--transition);
+    }
+
+    .stat:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat .value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat .label {
+        font-size: 0.875rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+    .detail-content {
+        padding: 5rem 0;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 3rem;
+    }
+
+    /* Левая колонка - контент проекта */
+    .project-story {
+        background: white;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .project-story h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--darker);
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .project-story h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+
+    .stat {
+    /* Добавьте эти свойства к существующим */
+    min-height: 120px; /* Фиксированная минимальная высота */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stat .value {
+    /* Убедитесь, что у вас есть эти свойства */
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    word-break: break-word; /* Перенос длинных чисел */
+}
+
+.stat .label {
+    /* Убедитесь в наличии этих свойств */
+    font-size: 0.875rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: auto; /* Прижимает label к низу */
+}
+.stat {
+    border: 1px solid red; /* Временно для отладки */
+}
+    .story-content {
+        font-size: 1.125rem;
+        line-height: 1.8;
+        color: var(--dark);
+    }
+
+    .story-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .story-content img {
+        width: 100%;
+        border-radius: 12px;
+        margin: 2rem 0;
+        box-shadow: var(--card-shadow);
+    }
+
+    /* Правая колонка - инвестиционная информация */
+    .investment-box {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        padding: 2.5rem;
+        position: sticky;
+        top: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .investment-box h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--darker);
+    }
+
+    .investment-meta {
+        margin-bottom: 2rem;
+    }
+
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .meta-row:last-child {
+        border-bottom: none;
+    }
+
+    .meta-label {
+        font-weight: 500;
+        color: var(--gray);
+    }
+
+    .meta-value {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .progress-container {
+        margin: 2rem 0;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .progress-bar {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 4px;
+        transition: width 1s ease-out;
+    }
+
+    .invest-btn {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-size: 1.125rem;
+        margin-top: 1.5rem;
+    }
+
+    .invest-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Секция документов */
+    .documents-section {
+        margin-top: 4rem;
+        background: white;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .documents-section h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--darker);
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .documents-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .document-card {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: var(--transition);
+    }
+
+    .document-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .document-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+
+    .document-name {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .document-size {
+        color: var(--gray);
+        font-size: 0.875rem;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 992px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .investment-box {
+            position: static;
+            margin-top: 3rem;
+        }
+
+        .detail-hero {
+            height: auto;
+            min-height: auto;
+            padding-top: 6rem;
+        }
+
+        .hero-content {
+            padding-top: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .project-story,
+        .documents-section,
+        .investment-box {
+            padding: 2rem;
+        }
+
+        .funding-stats {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .hero-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+
+    /* Анимации */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+</style>
+
+<!-- Подключаем GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Анимация прогресс-бара
+        const progress = document.querySelector('.progress-fill');
+        if (progress) {
+            const percent = progress.getAttribute('data-percent');
+            gsap.to(progress, {
+                width: `${percent}%`,
+                duration: 1.5,
+                ease: "power2.out"
+            });
+        }
+
+        // Параллакс эффект для героя
+        gsap.to('.detail-hero', {
+            scrollTrigger: {
+                scrub: true
+            },
+            y: 50,
+            ease: "none"
+        });
+
+        // Анимация появления элементов
+        gsap.utils.toArray('.animate-on-scroll').forEach((el, i) => {
+            gsap.from(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: i * 0.1,
+                ease: "power2.out"
+            });
+        });
+    });
+</script>
+
+<!-- Основной контент страницы -->
+<div class="investment-detail">
+    <!-- Герой секция -->
+    <div class="detail-hero" style="background-image: url('{{ investment.image.url }}');">
+        <div class="container">
+            <div class="hero-content animate-fade-in-up">
+                <div class="hero-tags">
+                    <span class="hero-tag">{{ investment.location }}</span>
+                    <span class="hero-tag">{{ investment.security_type }}</span>
+                </div>
+                
+                <h1>{{ investment.title }}</h1>
+                
+                <div class="hero-meta">
+                    <div class="meta-item">
+                        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        <span>Доходность: {{ investment.investment_multiple }}x</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Срок: {{ investment.maturity }}</span>
+                    </div>
+                </div>
+                
+                <div class="funding-stats">
+                    <div class="stat animate-fade-in-up delay-100">
+                        <span class="value">
+                            {% if investment.raised_amount %}
+                                ${{ investment.raised_amount|floatformat:"0"|intcomma }}
+                            {% else %}
+                                $0
+                            {% endif %}
+                        </span>
+                        <span class="label">Привлечено</span>
+                    </div>
+                    <div class="stat animate-fade-in-up delay-200">
+                        <span class="value">
+                            {% if investment.goal_amount %}
+                                ${{ investment.goal_amount|floatformat:"0"|intcomma }}
+                            {% else %}
+                                $0
+                            {% endif %}
+                        </span>
+                        <span class="label">Цель</span>
+                    </div>
+                    <div class="stat animate-fade-in-up delay-300">
+                        <span class="value">
+                            {% if investment.progress_percent %}
+                                {{ investment.progress_percent|floatformat:"0" }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </span>
+                        <span class="label">Прогресс</span>
+                    </div>
+                    <div class="stat animate-fade-in-up delay-300">
+                        <span class="value">
+                            {% if investment.min_investment %}
+                                ${{ investment.min_investment|floatformat:"0"|intcomma }}
+                            {% else %}
+                                $0
+                            {% endif %}
+                        </span>
+                        <span class="label">Мин. инвестиция</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="detail-content">
+        <div class="container">
+            <div class="detail-grid">
+                <!-- Левая колонка - описание проекта -->
+                <div class="project-story animate-on-scroll">
+                    <h2>О проекте</h2>
+                    <div class="story-content">
+                        {{ investment.description|linebreaks }}
+                    </div>
+                    
+                    <!-- Секция документов -->
+                    <div class="documents-section animate-on-scroll">
+                        <h2>Документы</h2>
+                        <div class="documents-grid">
+                            <div class="document-card">
+                                <svg class="document-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h4 class="document-name">Инвестиционный меморандум</h4>
+                                <p class="document-size">PDF, 2.4 MB</p>
+                                <a href="#" class="download-link" style="display: inline-block; margin-top: 1rem; color: var(--primary); font-weight: 500;">Скачать</a>
+                            </div>
+                            <div class="document-card">
+                                <svg class="document-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h4 class="document-name">Финансовая модель</h4>
+                                <p class="document-size">XLSX, 1.8 MB</p>
+                                <a href="#" class="download-link" style="display: inline-block; margin-top: 1rem; color: var(--primary); font-weight: 500;">Скачать</a>
+                            </div>
+                            <div class="document-card">
+                                <svg class="document-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h4 class="document-name">Презентация</h4>
+                                <p class="document-size">PDF, 5.1 MB</p>
+                                <a href="#" class="download-link" style="display: inline-block; margin-top: 1rem; color: var(--primary); font-weight: 500;">Скачать</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Правая колонка - инвестиционная информация -->
+                <div class="investment-box animate-on-scroll">
+                    <h3>Инвестиционные детали</h3>
+                    
+                    <div class="investment-meta">
+                        <div class="meta-row">
+                            <span class="meta-label">Минимальная инвестиция</span>
+                            <span class="meta-value">
+                                {% if investment.min_investment %}
+                                    ${{ investment.min_investment|floatformat:"0"|intcomma }}
+                                {% else %}
+                                    $0
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Тип ценных бумаг</span>
+                            <span class="meta-value">{{ investment.security_type }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Срок инвестиции</span>
+                            <span class="meta-value">{{ investment.maturity }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Ожидаемая доходность</span>
+                            <span class="meta-value">{{ investment.investment_multiple }}x</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Дата запуска</span>
+                            <span class="meta-value">{{ investment.time_create|date:"d.m.Y" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Прогресс финансирования</span>
+                            <span>
+                                {% if investment.progress_percent %}
+                                    {{ investment.progress_percent|floatformat:"0" }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-percent="{% if investment.progress_percent %}{{ investment.progress_percent }}{% else %}0{% endif %}"></div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.875rem; color: var(--gray); margin-top: 1.5rem;">
+                        Инвестиции сопряжены с рисками. Перед инвестированием ознакомьтесь с документацией проекта.
+                    </p>
+                    
+                    <button class="invest-btn">Инвестировать в проект</button>
+                    
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <p style="font-size: 0.875rem; color: var(--gray);">Есть вопросы?</p>
+                        <a href="#" style="color: var(--primary); font-weight: 500;">Связаться с командой</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
