@@ -211,9 +211,7 @@
     letter-spacing: 0.05em;
     margin-top: auto; /* Прижимает label к низу */
 }
-.stat {
-    border: 1px solid red; /* Временно для отладки */
-}
+
     .story-content {
         font-size: 1.125rem;
         line-height: 1.8;
@@ -320,6 +318,7 @@
         transform: translateY(-2px);
         box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
     }
+    
 
     /* Секция документов */
     .documents-section {
@@ -450,6 +449,23 @@
     .delay-300 {
         animation-delay: 0.3s;
     }
+.detail-hero {
+  height: auto;        /* пусть высота подстраивается под контент */
+  min-height: 400px;   /* увеличь при необходимости */
+  overflow: visible;   /* чтобы ничего не скрывалось */
+  position: relative;  /* обязательно, если есть ::before */
+  padding-bottom: 50px; /* если нужно место снизу */
+}
+.detail-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* по высоте всего родителя */
+  background: rgba(0, 0, 0, 0.5); /* пример затемнения */
+  z-index: -1; /* обязательно, чтобы не заслонял текст */
+}
 </style>
 
 <!-- Подключаем GSAP -->

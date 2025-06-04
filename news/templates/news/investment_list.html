@@ -290,7 +290,8 @@
         margin: 4rem 0;
     }
 
-    .page-nav, .page-number {
+    .page-nav,
+    .page-number {
         width: 40px;
         height: 40px;
         display: flex;
@@ -362,6 +363,7 @@
             opacity: 0;
             transform: translateY(20px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -373,6 +375,14 @@
     }
 
     /* GSAP анимации будут добавлены в скриптах */
+    .progress-bar {
+        width: 0%;
+        /* Начальное значение */
+        height: 100%;
+        background: var(--primary);
+        border-radius: 3px;
+        transition: width 1s ease-out;
+    }
 </style>
 
 <!-- Подключаем GSAP -->
@@ -399,23 +409,28 @@
 
         // Анимация прогресс-баров
         gsap.utils.toArray(".progress-bar").forEach(bar => {
-            const percent = bar.style.width;
-            bar.style.width = "0%";
-            
-            gsap.to(bar, {
-                width: percent,
-                duration: 1.5,
-                delay: 0.3,
-                ease: "power2.out"
+            const percent = bar.dataset.percent + "%";
+
+            ScrollTrigger.create({
+                trigger: bar,
+                start: "top 80%",
+                onEnter: () => {
+                    gsap.to(bar, {
+                        width: percent,
+                        duration: 1.5,
+                        ease: "power2.out"
+                    });
+                },
+                once: true // Анимация сработает только один раз
             });
         });
     });
 
     // Фильтрация проектов
-    document.getElementById('categoryFilter').addEventListener('change', function() {
+    document.getElementById('categoryFilter').addEventListener('change', function () {
         const category = this.value;
         const cards = document.querySelectorAll('.investment-card');
-        
+
         cards.forEach(card => {
             if (category === 'all' || card.dataset.category === category) {
                 card.style.display = 'flex';
@@ -474,15 +489,18 @@
                     <h3>{{ investment.title }}</h3>
                     <p class="location">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
                         {{ investment.location }}
                     </p>
                     <p class="description">{{ investment.short_description|truncatechars:120 }}</p>
-                    
+
                     <div class="progress-container">
-                        <div class="progress-bar" style="width: {{ investment.progress_percent }}%"></div>
+                        <div class="progress-bar" data-percent="{{ investment.progress_percent }}"></div>
                     </div>
                     <div class="funding-info">
                         <span>${{ investment.raised_amount }} привлечено</span>
