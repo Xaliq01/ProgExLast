@@ -6,6 +6,17 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Count, Q
 from news.models import About_us, Category, ContactMessage, Developer, Investment, News, Order, Product, Testimonial
 from django.core.mail import send_mail
+from django.utils import translation
+from django_user_agents.utils import get_user_agent
+
+def investment_detail(request, pk):
+    investment = get_object_or_404(Investment, pk=pk)
+    user_agent = get_user_agent(request)
+    
+    return render(request, 'investment_detail.html', {
+        'investment': investment,
+        'is_mobile': user_agent.is_mobile
+    })
 
 menu = [
     {"title": "Home", "url": "home"},
